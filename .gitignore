@@ -3,3 +3,4 @@ update.py
 .ipynb_checkpoints
 __pycache__
 .DS_Store
+/dash_app/test*
