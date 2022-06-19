@@ -2,6 +2,7 @@ from dash import Dash, Input, Output, callback, dash_table, dcc, html
 from datetime import date, datetime
 import dash_bootstrap_components as dbc
 from mentions import mentions_layout, df
+from sentiment import sentiment_layout
 
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.LUX],
                 meta_tags=[{'name': 'viewport',
@@ -53,7 +54,7 @@ def switch_tab(tab_chosen):
     if tab_chosen == 'tab-mentions':
         return mentions_layout
     elif tab_chosen == "tab-sentiment":
-        return 'Tab in developement'
+        return sentiment_layout
     elif tab_chosen == "tab-other":
         return 'Tab in developement'
     return html.P("This shouldn't be displayed for now...")
