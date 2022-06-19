@@ -7,10 +7,12 @@ import dash_bootstrap_components as dbc
 conn = psycopg2.connect(database='TwitterDB', 
 							user=credentials.pg_user, 
 							password=credentials.pg_pass)
+
 query = '''
 		    SELECT t.*, tu.user_location FROM tweets AS t
 		    LEFT JOIN twitter_user AS tu ON tu.user_id = t.user_id;
         	'''
+
 
 df = pd.read_sql(query, conn)
 
@@ -47,7 +49,9 @@ mentions_layout = html.Div(
 						'height': 'auto',
 						'lineHeight': '17px'
 								},
-                    page_size=5
+                    page_size=5,
+                    
+
 									)
 					)
 		)

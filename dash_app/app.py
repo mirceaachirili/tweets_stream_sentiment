@@ -1,10 +1,7 @@
 from dash import Dash, Input, Output, callback, dash_table, dcc, html
-from datetime import date
-import pandas as pd
-import psycopg2
-import credentials
+from datetime import date, datetime
 import dash_bootstrap_components as dbc
-from mentions import mentions_layout
+from mentions import mentions_layout, df
 
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.LUX],
                 meta_tags=[{'name': 'viewport',
@@ -30,15 +27,16 @@ app.layout = dbc.Container([
     dbc.Row(dbc.Col(html.H1('Twitter sentiment tracker',
             style={'textAlign': 'center'}), width=12)),
     html.Hr(),
+    html.P('Select date range:'),
     html.Div([
         dcc.DatePickerRange(
             id='my-date-picker-range',
-            min_date_allowed=date(1995, 8, 5),
-            max_date_allowed=date(2017, 9, 19),
-            initial_visible_month=date(2017, 8, 5),
-            end_date=date(2017, 8, 25)
-        ),
-    html.Div(id='output-container-date-picker-range')
+            min_date_allowed=date(2021, 7, 1),
+            max_date_allowed=date.today(),
+            initial_visible_month=date(2021, 7, 1),
+            start_date=date(2021,7,17),
+            end_date=date.today()
+        )
         ]),
     dbc.Row(dbc.Col(app_tabs, width=12), className='mb-3'),
     html.Div(id='content', children=[])
@@ -62,26 +60,15 @@ def switch_tab(tab_chosen):
 
 
 # Date range callback
+# Filter datatable by date range
 @app.callback(
-    Output('output-container-date-picker-range', 'children'),
+    Output('tbl', 'data'),
     Input('my-date-picker-range', 'start_date'),
     Input('my-date-picker-range', 'end_date'))
 
-def update_output(start_date, end_date):
-    string_prefix = 'You have selected: '
-    if start_date is not None:
-        start_date_object = date.fromisoformat(start_date)
-        start_date_string = start_date_object.strftime('%B %d, %Y')
-        string_prefix = string_prefix + 'Start Date: ' + start_date_string + ' | '
-    if end_date is not None:
-        end_date_object = date.fromisoformat(end_date)
-        end_date_string = end_date_object.strftime('%B %d, %Y')
-        string_prefix = string_prefix + 'End Date: ' + end_date_string
-    if len(string_prefix) == len('You have selected: '):
-        return 'Select a date to see it displayed here'
-    else:
-        return string_prefix
-
+def update_table(start_date, end_date):
+    mask = (df['datetime'] > start_date) & (df['datetime'] <= end_date)
+    return df[mask].to_dict('records')
 
 # Dropdown callback
 @app.callback(
