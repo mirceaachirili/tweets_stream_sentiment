@@ -1,4 +1,3 @@
-from mentions import df # import dataframe
 from textblob import TextBlob
 import re
 import pandas as pd
@@ -35,43 +34,53 @@ def analyze_subjectivity(tweet):
         return 0
 
 
-# Create dataframe containing the polarity and subjectivity of tweets
+# # Create dataframe containing the polarity and subjectivity of tweets
+# @app.callback(
+#     Output('scatter-plot', 'figure'),
+#     Input('memory-df-filtered', 'data')
+# )
 
-tweets = df.loc[:, ['tweet', 'datetime']]
-tweets['polarity'] = tweets['tweet'].apply(analyze_polarity)
+# def update_graph(memory_df):
+#     df_updated = pd.read_json(memory_df, orient='split')
 
-# Group tweets count by time and polarity
-tweets_grouped = tweets.groupby([pd.Grouper(key='datetime', freq='2h'), 'polarity']) \
-                        .count().unstack(fill_value=0).stack().reset_index()
-tweets_grouped = tweets_grouped.rename(columns={
-    'datetime': 'Time in UTC',
-    'tweet': 'Number of mentions'
-})
+#     tweets = df_updated.loc[:, ['tweet', 'datetime']]
+#     tweets['polarity'] = tweets['tweet'].apply(analyze_polarity)
 
-# Prepare time series data
-time_series = tweets_grouped['Time in UTC'][tweets_grouped['polarity'] == 0].reset_index(drop=True)
+#     # Group tweets count by time and polarity
+#     tweets_grouped = tweets.groupby([pd.Grouper(key='datetime', freq='2h'), 'polarity']) \
+#                             .count().unstack(fill_value=0).stack().reset_index()
+#     tweets_grouped = tweets_grouped.rename(columns={
+#         'datetime': 'Time in UTC',
+#         'tweet': 'Number of mentions'
+#     })
 
-negative_polarity = tweets_grouped['Number of mentions'][tweets_grouped['polarity'] == -1].reset_index(drop=True)
-neutral_polarity = tweets_grouped['Number of mentions'][tweets_grouped['polarity'] == 0].reset_index(drop=True)
-positive_polarity = tweets_grouped['Number of mentions'][tweets_grouped['polarity'] == 1].reset_index(drop=True)
+#     # Prepare time series data
+#     time_series = tweets_grouped['Time in UTC'][tweets_grouped['polarity'] == 0].reset_index(drop=True)
 
-# Create plotly graph
-import plotly.express as px
-import plotly.graph_objects as go
-fig = go.Figure()
+#     negative_polarity = tweets_grouped['Number of mentions'][tweets_grouped['polarity'] == -1].reset_index(drop=True)
+#     neutral_polarity = tweets_grouped['Number of mentions'][tweets_grouped['polarity'] == 0].reset_index(drop=True)
+#     positive_polarity = tweets_grouped['Number of mentions'][tweets_grouped['polarity'] == 1].reset_index(drop=True)
 
-fig.add_trace(go.Scatter(x=time_series, y=negative_polarity, mode='lines+markers', name='negative'))
-fig.add_trace(go.Scatter(x=time_series, y=neutral_polarity, mode='lines+markers', name='neutral'))
-fig.add_trace(go.Scatter(x=time_series, y=positive_polarity, mode='lines+markers', name='positive'))
+#     # Create plotly graph
+#     import plotly.express as px
+#     import plotly.graph_objects as go
+#     fig = go.Figure()
 
-fig.update_layout(title={'text': 'Twitter Sentiment Tracker',
-                        'y':0.9,
-                        'x':0.5,
-                        'xanchor': 'center',
-                        'yanchor': 'top'},
-                 xaxis_title='Time', yaxis_title='Number of mentions')
+#     fig.add_trace(go.Scatter(x=time_series, y=negative_polarity, mode='lines+markers', name='negative'))
+#     fig.add_trace(go.Scatter(x=time_series, y=neutral_polarity, mode='lines+markers', name='neutral'))
+#     fig.add_trace(go.Scatter(x=time_series, y=positive_polarity, mode='lines+markers', name='positive'))
 
-# Create graph container
-sentiment_layout = html.Div([
-    dcc.Graph(figure=fig, id='scatter_plot')]
-)
+#     fig.update_layout(title={'text': 'Twitter Sentiment Tracker',
+#                             'y':0.9,
+#                             'x':0.5,
+#                             'xanchor': 'center',
+#                             'yanchor': 'top'},
+#                     xaxis_title='Time', yaxis_title='Number of mentions')
+
+#     return fig
+
+
+# # Create graph container
+# sentiment_layout = html.Div([
+#     dcc.Graph(figure={}, id='scatter-plot')]
+# )
